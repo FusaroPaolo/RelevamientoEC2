@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "generated_utc": "2026-02-27T20:17:51Z",
+    "purpose": "IAM policies for running AWS inventory/network/resources/cost scripts from an EC2 instance (e.g., Cloud9).",
+    "notes": [
+      "Attach Base policy for inventory/network/resources reports.",
+      "Attach CostExplorer policy only if using the EC2 cost downloader.",
+      "Attach IAM-Optional policy only if running the resources report with --include-iam (sensitive)."
+    ]
+  },
+  "trust_policy_ec2_assume_role": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "EC2AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "ec2.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+  "policy_relevamientos_base_readonly": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "EC2DescribeForInventoryAndNetwork",
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DescribeRegions",
+          "ec2:DescribeAvailabilityZones",
+          "ec2:DescribeInstances",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeInternetGateways",
+          "ec2:DescribeNatGateways",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeTags"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "S3ListAndReadBucketMetadata",
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListAllMyBuckets",
+          "s3:GetBucketLocation",
+          "s3:GetBucketTagging"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "RDSDescribe",
+        "Effect": "Allow",
+        "Action": [
+          "rds:DescribeDBInstances"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "LambdaListAndTags",
+        "Effect": "Allow",
+        "Action": [
+          "lambda:ListFunctions",
+          "lambda:ListTags"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "CloudFormationDescribeStacks",
+        "Effect": "Allow",
+        "Action": [
+          "cloudformation:DescribeStacks"
+        ],
+        "Resource": "*"
+      }
+    ]
+  },
+  "policy_relevamientos_cost_explorer_readonly": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "CostExplorerRead",
+        "Effect": "Allow",
+        "Action": [
+          "ce:GetCostAndUsage"
+        ],
+        "Resource": "*"
+      }
+    ]
+  },
+  "policy_relevamientos_iam_readonly_optional": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "IAMReadUsersAndRolesAndPolicies",
+        "Effect": "Allow",
+        "Action": [
+          "iam:ListUsers",
+          "iam:ListRoles",
+          "iam:ListUserPolicies",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedUserPolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:GetUserPolicy",
+          "iam:GetRolePolicy",
+          "iam:GetPolicy",
+          "iam:GetPolicyVersion"
+        ],
+        "Resource": "*"
+      }
+    ]
+  },
+  "recommended_attachments": {
+    "role_name_suggestion": "Role_Instancia_Relevamientos",
+    "attach_policies": [
+      "policy_relevamientos_base_readonly",
+      "policy_relevamientos_cost_explorer_readonly (only if using cost downloader script)",
+      "policy_relevamientos_iam_readonly_optional (only if running resources report with --include-iam)"
+    ]
+  }
+}
